@@ -64,10 +64,13 @@ impl Solution {
 
 /**
  * Casos de prueba
+ *
+ * casos borde:
+ * E1. ...
  */
 fn get_test_cases() -> Vec<(/* input, expected */)> {
     vec![
-      // /**/ (, ),
+      // /**/ (, ), // E
     ]
 }
 

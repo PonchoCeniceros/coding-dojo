@@ -36,7 +36,7 @@ orden,numero,nombre,complejidad_tiempo,rust,python,conceptos_clave
 36,704,Binary Search,O(log n),Si,No,"búsqueda binaria canónica; calcular el punto medio sin provocar overflow"
 37,278,First Bad Version,O(log n),Si,No,"búsqueda binaria sobre un predicado monótono en vez de sobre valores"
 38,33,Search in Rotated Sorted Array,O(log n),Si,No,"búsqueda binaria identificando en cada paso cuál mitad está ordenada"
-39,153,Find Minimum in Rotated Sorted Array,O(log n),No,No,"búsqueda binaria dirigida hacia el punto de rotación"
+39,153,Find Minimum in Rotated Sorted Array,O(log n),Si,No,"búsqueda binaria dirigida hacia el punto de rotación"
 40,104,Maximum Depth of Binary Tree,O(n),No,No,"recursión post-order; la profundidad es 1 más el máximo de los hijos"
 41,100,Same Tree,O(n),No,No,"recursión simultánea sobre dos árboles; casos base cuando hay nulos"
 42,102,Binary Tree Level Order Traversal,O(n),No,No,"BFS con cola; agrupar los nodos por nivel"
