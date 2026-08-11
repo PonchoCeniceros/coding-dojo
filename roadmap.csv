@@ -1,60 +1,60 @@
-orden,numero,nombre,complejidad_tiempo,rust,python,conceptos_clave
-2,1464,Maximum Product of Two Elements,O(n),Si,Si,"encontrar los dos máximos en una pasada; alternativa: ordenar y tomar los últimos dos"
-3,191,Number of 1 Bits,O(log n),Si,Si,"operaciones bitwise (AND y shift); conteo de bits encendidos (popcount)"
-4,9,Palindrome Number,O(log n),Si,Si,"reversión de dígitos o comparación de la representación textual; cuidar el overflow al revertir"
-5,136,Single Number,O(n),Si,Si,"XOR: los pares se anulan y sobrevive el único; reducción en una sola pasada"
-6,2917,Find the K-or of an Array,O(32n),Si,Si,"máscaras de bits; contar cuántos números tienen encendido cada bit; comparar contra el umbral k"
-7,338,Counting Bits,O(n log n),Si,Si,"conteo de bits sobre un rango; DP sobre bits con f(i) = f(i>>1) + (i&1)"
-8,26,Remove Duplicates from Sorted Array,O(n),Si,Si,"dos punteros (uno lee y otro escribe); modificación in-place aprovechando que ya está ordenado"
-9,14,Longest Common Prefix,O(n*m),Si,Si,"comparación carácter a carácter en paralelo; cortar al primer desajuste"
-10,217,Contains Duplicate,O(n),Si,Si,"conjunto para pertenencia en O(1); salida temprana al primer repetido"
-11,20,Valid Parentheses,O(n),Si,Si,"pila para emparejar; mapa de símbolo de cierre a símbolo de apertura"
-12,888,Fair Candy Swap,O(n+m),Si,Si,"sumas totales y diferencia entre ambas; conjunto para buscar el complemento en O(1)"
-13,1003,Check if Word Valid After Substitutions,O(n),Si,Si,"pila; revisar el patrón en la cima cada vez que se inserta"
-14,3074,Apple Redistribution into Boxes,O(n log n),Si,Si,"ordenar descendente y acumular con estrategia codiciosa (greedy)"
-15,509,Fibonacci Number,O(n),Si,Si,"recurrencia; memoización o DP iterativo con dos acumuladores"
-16,1137,N-th Tribonacci Number,O(n),Si,Si,"recurrencia de tres términos; ventana deslizante de tamaño fijo"
-17,70,Climbing Stairs,O(n),Si,Si,"DP lineal (mismo patrón que Fibonacci); espacio O(1) con dos variables"
-18,746,Min Cost Climbing Stairs,O(n),Si,Si,"DP lineal eligiendo el mínimo entre dos saltos posibles"
-19,241,Different Ways to Add Parentheses,O(Catalan(n)),Si,Si,"divide y conquista partiendo en cada operador; combinar los resultados de las subexpresiones; memoización opcional"
-20,13,Roman to Integer,O(n),Si,Si,"mapa de símbolo a valor; lookahead para restar cuando el siguiente es mayor"
-21,28,Find First Occurrence in String,O(n*m) / O(n+m) KMP,Si,Si,"búsqueda de subcadena por ventanas; KMP para lograr O(n+m)"
-22,1,Two Sum,O(n),Si,Si,"mapa de valor a índice; buscar el complemento en una sola pasada"
-23,11,Container With Most Water,O(n),Si,No,"dos punteros desde los extremos; mover siempre el lado de menor altura"
-24,3,Longest Substring Without Repeating Characters,O(n),Si,No,"ventana deslizante; conjunto o tabla de frecuencias para el contenido de la ventana"
-25,15,3Sum,O(n^2),Si,No,"ordenar y luego dos punteros; saltar duplicados para no repetir tripletas"
-26,49,Group Anagrams,O(n * m log m),Si,No,"clave canónica por grupo (palabra ordenada o vector de frecuencias); agrupar en un mapa"
-27,347,Top K Frequent Elements,O(n log k),Si,No,"mapa de frecuencias; heap de tamaño k o bucket sort"
-28,48,Rotate Image,O(n^2),Si,No,"rotación in-place por capas; alternativa: transponer y luego reflejar"
-29,54,Spiral Matrix,O(n * m),Si,No,"recorrido por límites que se encogen (arriba / abajo / izquierda / derecha)"
-30,206,Reverse Linked List,O(n),Si,No,"reversión iterativa de punteros (previo / actual / siguiente); reasignar enlaces sin perder nodos"
-31,21,Merge Two Sorted Lists,O(n),Si,No,"fusión con dos punteros; nodo centinela para simplificar el manejo de la cabeza"
-32,226,Invert Binary Tree,O(n),Si,No,"recursión intercambiando los hijos de cada nodo; recorrido completo del árbol"
-33,198,House Robber,O(n),Si,No,"DP lineal con decisión de tomar o saltar; espacio O(1) con dos acumuladores"
-34,322,Coin Change,O(n * amount),Si,No,"DP tipo knapsack; tabla de mínimos por monto; valor centinela para lo inalcanzable"
-35,35,Search Insert Position,O(log n),Si,No,"búsqueda binaria; devolver el punto de inserción cuando el valor no existe"
-36,704,Binary Search,O(log n),Si,No,"búsqueda binaria canónica; calcular el punto medio sin provocar overflow"
-37,278,First Bad Version,O(log n),Si,No,"búsqueda binaria sobre un predicado monótono en vez de sobre valores"
-38,33,Search in Rotated Sorted Array,O(log n),Si,No,"búsqueda binaria identificando en cada paso cuál mitad está ordenada"
-39,153,Find Minimum in Rotated Sorted Array,O(log n),Si,No,"búsqueda binaria dirigida hacia el punto de rotación"
-40,104,Maximum Depth of Binary Tree,O(n),No,No,"recursión post-order; la profundidad es 1 más el máximo de los hijos"
-41,100,Same Tree,O(n),No,No,"recursión simultánea sobre dos árboles; casos base cuando hay nulos"
-42,102,Binary Tree Level Order Traversal,O(n),No,No,"BFS con cola; agrupar los nodos por nivel"
-43,98,Validate Binary Search Tree,O(n),No,No,"recursión propagando límites mínimo y máximo; alternativa: el recorrido inorder debe ser creciente"
-44,236,Lowest Common Ancestor of a Binary Tree,O(n),No,No,"recursión post-order; el ancestro es el nodo donde ambos lados reportan hallazgo"
-45,733,Flood Fill,O(n*m),No,No,"DFS o BFS en malla; control de límites y marcado de celdas visitadas"
-46,200,Number of Islands,O(n*m),No,No,"DFS o BFS en malla; marcar cada componente conexa al recorrerla"
-47,133,Clone Graph,O(n),No,No,"DFS o BFS con mapa de nodo original a copia para no ciclar"
-48,207,Course Schedule,O(V+E),No,No,"orden topológico o detección de ciclos con estados de visita"
-49,78,Subsets,O(2^n),No,No,"backtracking incluyendo o excluyendo cada elemento; deshacer la decisión al retroceder"
-50,46,Permutations,O(n!),No,No,"backtracking con marcado de elementos usados; alternativa: intercambios in-place"
-51,39,Combination Sum,O(2^n),No,No,"backtracking permitiendo reuso; poda cuando la suma acumulada excede el objetivo"
-52,53,Maximum Subarray,O(n),No,No,"algoritmo de Kadane: reiniciar el acumulado cuando se vuelve negativo"
-53,121,Best Time to Buy and Sell Stock,O(n),No,No,"una sola pasada guardando el mínimo previo; maximizar la diferencia"
-54,62,Unique Paths,O(n*m),No,No,"DP en dos dimensiones (equivale a combinatoria); optimización a una sola fila"
-55,139,Word Break,O(n^2),No,No,"DP sobre prefijos; conjunto de palabras para consultar pertenencia en O(1)"
-56,300,Longest Increasing Subsequence,O(n log n),No,No,"DP O(n^2) como base; optimización con búsqueda binaria sobre colas (patience sorting)"
-57,1046,Last Stone Weight,O(n log n),No,No,"max-heap; extraer los dos mayores y reinsertar la diferencia"
-58,215,Kth Largest Element in an Array,O(n log k),No,No,"min-heap de tamaño k; alternativa: quickselect"
-59,42,Trapping Rain Water,O(n),No,No,"dos punteros con el máximo acumulado de cada lado; evolución de Container With Most Water"
-60,76,Minimum Window Substring,O(n),No,No,"ventana deslizante de tamaño variable; tabla de conteos y contador de coincidencias"
+orden,numero,nombre,complejidad_tiempo,rust,python,conceptos_clave,notas
+2,1464,Maximum Product of Two Elements,O(n),Si,Si,"encontrar los dos máximos en una pasada; alternativa: ordenar y tomar los últimos dos",
+3,191,Number of 1 Bits,O(log n),Si,Si,"operaciones bitwise (AND y shift); conteo de bits encendidos (popcount)",
+4,9,Palindrome Number,O(log n),Si,Si,"reversión de dígitos o comparación de la representación textual; cuidar el overflow al revertir",
+5,136,Single Number,O(n),Si,Si,"XOR: los pares se anulan y sobrevive el único; reducción en una sola pasada",
+6,2917,Find the K-or of an Array,O(32n),Si,Si,"máscaras de bits; contar cuántos números tienen encendido cada bit; comparar contra el umbral k",
+7,338,Counting Bits,O(n log n),Si,Si,"conteo de bits sobre un rango; DP sobre bits con f(i) = f(i>>1) + (i&1)",
+8,26,Remove Duplicates from Sorted Array,O(n),Si,Si,"dos punteros (uno lee y otro escribe); modificación in-place aprovechando que ya está ordenado",
+9,14,Longest Common Prefix,O(n*m),Si,Si,"comparación carácter a carácter en paralelo; cortar al primer desajuste",
+10,217,Contains Duplicate,O(n),Si,Si,"conjunto para pertenencia en O(1); salida temprana al primer repetido",
+11,20,Valid Parentheses,O(n),Si,Si,"pila para emparejar; mapa de símbolo de cierre a símbolo de apertura",
+12,888,Fair Candy Swap,O(n+m),Si,Si,"sumas totales y diferencia entre ambas; conjunto para buscar el complemento en O(1)",
+13,1003,Check if Word Valid After Substitutions,O(n),Si,Si,"pila; revisar el patrón en la cima cada vez que se inserta",
+14,3074,Apple Redistribution into Boxes,O(n log n),Si,Si,"ordenar descendente y acumular con estrategia codiciosa (greedy)",
+15,509,Fibonacci Number,O(n),Si,Si,"recurrencia; memoización o DP iterativo con dos acumuladores",
+16,1137,N-th Tribonacci Number,O(n),Si,Si,"recurrencia de tres términos; ventana deslizante de tamaño fijo",
+17,70,Climbing Stairs,O(n),Si,Si,"DP lineal (mismo patrón que Fibonacci); espacio O(1) con dos variables",
+18,746,Min Cost Climbing Stairs,O(n),Si,Si,"DP lineal eligiendo el mínimo entre dos saltos posibles",
+19,241,Different Ways to Add Parentheses,O(Catalan(n)),Si,Si,"divide y conquista partiendo en cada operador; combinar los resultados de las subexpresiones; memoización opcional",
+20,13,Roman to Integer,O(n),Si,Si,"mapa de símbolo a valor; lookahead para restar cuando el siguiente es mayor",
+21,28,Find First Occurrence in String,O(n*m) / O(n+m) KMP,Si,Si,"búsqueda de subcadena por ventanas; KMP para lograr O(n+m)",
+22,1,Two Sum,O(n),Si,Si,"mapa de valor a índice; buscar el complemento en una sola pasada",
+23,11,Container With Most Water,O(n),Si,No,"dos punteros desde los extremos; mover siempre el lado de menor altura",
+24,3,Longest Substring Without Repeating Characters,O(n),Si,No,"ventana deslizante; conjunto o tabla de frecuencias para el contenido de la ventana",
+25,15,3Sum,O(n^2),Si,No,"ordenar y luego dos punteros; saltar duplicados para no repetir tripletas",
+26,49,Group Anagrams,O(n * m log m),Si,No,"clave canónica por grupo (palabra ordenada o vector de frecuencias); agrupar en un mapa",
+27,347,Top K Frequent Elements,O(n log k),Si,No,"mapa de frecuencias; heap de tamaño k o bucket sort",
+28,48,Rotate Image,O(n^2),Si,No,"rotación in-place por capas; alternativa: transponer y luego reflejar",
+29,54,Spiral Matrix,O(n * m),Si,No,"recorrido por límites que se encogen (arriba / abajo / izquierda / derecha)",
+30,206,Reverse Linked List,O(n),Si,No,"reversión iterativa de punteros (previo / actual / siguiente); reasignar enlaces sin perder nodos",
+31,21,Merge Two Sorted Lists,O(n),Si,No,"fusión con dos punteros; nodo centinela para simplificar el manejo de la cabeza",
+32,226,Invert Binary Tree,O(n),Si,No,"recursión intercambiando los hijos de cada nodo; recorrido completo del árbol",
+33,198,House Robber,O(n),Si,No,"DP lineal con decisión de tomar o saltar; espacio O(1) con dos acumuladores",
+34,322,Coin Change,O(n * amount),Si,No,"DP tipo knapsack; tabla de mínimos por monto; valor centinela para lo inalcanzable",
+35,35,Search Insert Position,O(log n),Si,No,"búsqueda binaria; devolver el punto de inserción cuando el valor no existe",
+36,704,Binary Search,O(log n),Si,No,"búsqueda binaria canónica; calcular el punto medio sin provocar overflow",
+37,278,First Bad Version,O(log n),Si,No,"búsqueda binaria sobre un predicado monótono en vez de sobre valores",
+38,33,Search in Rotated Sorted Array,O(log n),Si,No,"búsqueda binaria identificando en cada paso cuál mitad está ordenada",
+39,153,Find Minimum in Rotated Sorted Array,O(log n),Si,No,"búsqueda binaria dirigida hacia el punto de rotación",
+40,104,Maximum Depth of Binary Tree,O(n),No,No,"recursión post-order; la profundidad es 1 más el máximo de los hijos",
+41,100,Same Tree,O(n),No,No,"recursión simultánea sobre dos árboles; casos base cuando hay nulos",
+42,102,Binary Tree Level Order Traversal,O(n),No,No,"BFS con cola; agrupar los nodos por nivel",
+43,98,Validate Binary Search Tree,O(n),No,No,"recursión propagando límites mínimo y máximo; alternativa: el recorrido inorder debe ser creciente",
+44,235,Lowest Common Ancestor of a BST,O(n),No,No,"Reemplazo de P236 (PREMIUM). Post-order recursion; más simple porque el árbol está ordenado. Domina este para entender P236.",REEMPLAZA P236 (Premium)
+45,733,Flood Fill,O(n*m),No,No,"DFS o BFS en malla; control de límites y marcado de celdas visitadas",
+46,200,Number of Islands,O(n*m),No,No,"DFS o BFS en malla; marcar cada componente conexa al recorrerla",
+47,138,Copy List with Random Pointer,O(n),No,No,"Reemplazo de P133 (PREMIUM). Hash map para mapear nodos originales a copias. Mismo patrón que cloning de grafos pero más visual.",REEMPLAZA P133 (Premium)
+48,210,Course Schedule II,O(V+E),No,No,"Reemplazo de P207 (PREMIUM). Topological sort con DFS. Devuelve el orden vs solo sí/no. Domina este para P207.",REEMPLAZA P207 (Premium)
+49,78,Subsets,O(2^n),No,No,"backtracking incluyendo o excluyendo cada elemento; deshacer la decisión al retroceder",
+50,46,Permutations,O(n!),No,No,"backtracking con marcado de elementos usados; alternativa: intercambios in-place",
+51,39,Combination Sum,O(2^n),No,No,"backtracking permitiendo reuso; poda cuando la suma acumulada excede el objetivo",
+52,53,Maximum Subarray,O(n),No,No,"algoritmo de Kadane: reiniciar el acumulado cuando se vuelve negativo",
+53,121,Best Time to Buy and Sell Stock,O(n),No,No,"una sola pasada guardando el mínimo previo; maximizar la diferencia",
+54,62,Unique Paths,O(n*m),No,No,"DP en dos dimensiones (equivale a combinatoria); optimización a una sola fila",
+55,139,Word Break,O(n^2),No,No,"DP sobre prefijos; conjunto de palabras para consultar pertenencia en O(1)",
+56,300,Longest Increasing Subsequence,O(n log n),No,No,"DP O(n^2) como base; optimización con búsqueda binaria sobre colas (patience sorting)",
+57,1046,Last Stone Weight,O(n log n),No,No,"max-heap; extraer los dos mayores y reinsertar la diferencia",
+58,215,Kth Largest Element in an Array,O(n log k),No,No,"min-heap de tamaño k; alternativa: quickselect",
+59,42,Trapping Rain Water,O(n),No,No,"dos punteros con el máximo acumulado de cada lado; evolución de Container With Most Water",
+60,76,Minimum Window Substring,O(n),No,No,"ventana deslizante de tamaño variable; tabla de conteos y contador de coincidencias",
