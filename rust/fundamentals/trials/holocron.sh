@@ -58,7 +58,6 @@ struct Solution;
  */
 impl Solution {
     pub fn ${PACKAGE_NAME}() {
-        // Implement your solution here
         todo!()
     }
 }
@@ -66,24 +65,31 @@ impl Solution {
 /**
  * Casos de prueba
  */
-fn get_test_cases() {
-    // (, ),
+fn get_test_cases() -> Vec<(/* input, expected */)> {
+    vec![
+      // /**/ (, ),
+    ]
 }
 
 /**
  * Ejecución a discresión
  */
 fn main() {
-    let cases = get_test_cases();
+    const DEFAULT: usize = 0;
 
+    let suite = get_test_cases();
     let idx: usize = std::env::var("TRIAL_CASE")
         .ok()
         .and_then(|v| v.parse().ok())
-        .unwrap_or(0);
+        .unwrap_or(DEFAULT);
 
-    let (input, _expected) = &cases[idx];
-    let ans = Solution::${PACKAGE_NAME}(/* input */);
-    println!("{}", format!("{}", ans).green().italic().underline());
+    let (input, expected) = &suite[idx];
+    let answer = Solution::${PACKAGE_NAME}(/* input */);
+    println!(
+        "answer: {} | expected: {}",
+        format!("{}", answer).green().italic().underline(),
+        format!("{}", expected).blue().italic().underline()
+    );
 }
 
 /**
@@ -97,21 +103,15 @@ mod tests {
     fn test_${PACKAGE_NAME}() {
       let suite = get_test_cases();
 
-      for (input, expected) in cases {
+      for (input, expected) in suite {
         // assert_eq!(
-        //   Solution::${PACKAGE_NAME}(),
+        //   Solution::${PACKAGE_NAME}(/* input */),
         //   expected,
         //   "{}",
         //   format!("{:?}", input).red().italic().underline()
         // );
       }
     }
-
-
-
-
-
-
 }
 EOF
 
