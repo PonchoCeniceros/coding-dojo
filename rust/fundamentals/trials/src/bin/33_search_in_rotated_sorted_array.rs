@@ -16,9 +16,14 @@ impl Solution {
             }
 
             let m = l + (r - l) / 2;
+            let mi = m as usize;
 
-            if nums[m as usize] < nums[r as usize] {
-                r = m - 1
+            if nums[mi] < nums[r as usize] {
+                if nums[mi] < nums[mi.saturating_sub(1)] {
+                    return mi;
+                } else {
+                    r = m - 1 // linea original
+                }
             } else {
                 l = m + 1
             }
@@ -28,12 +33,6 @@ impl Solution {
     }
 
     fn make_bs(nums: &[i32], target: i32, delta: i32) -> i32 {
-        println!("{:?} {}", nums, target);
-
-        if nums.len() == 1 && target == nums[0] {
-            return 0;
-        }
-
         let mut l = 0;
         let mut r = nums.len() as i32 - 1;
 
@@ -59,89 +58,77 @@ impl Solution {
     pub fn search(nums: Vec<i32>, target: i32) -> i32 {
         // #1 primero encontrar el cero (el desplazamiento)
         let delta = Solution::get_delta(&nums);
+        println!("δ = {}", delta);
 
-        println!("δ = {}", format!("{}", delta).purple().italic().underline());
+        if delta == 0 {
+            if nums[0] < nums[nums.len() - 1] {
+                return Solution::make_bs(&nums, target, 0_i32);
+            } else {
+                let nums_izq = &nums[0..1];
+                let nums_der = &nums[1..nums.len()];
 
-        // #1.5 si no hay dislocamiento, hacer BS en todo el arr
-        // if delta == 0 {
-        //     return Solution::make_bs(&nums, target, 0_i32);
-        // }
+                return if nums[0] == target {
+                    Solution::make_bs(nums_izq, target, 0_i32)
+                } else {
+                    Solution::make_bs(nums_der, target, nums_izq.len() as i32)
+                };
+            }
+        };
 
         // #2 luego hacer la BS considerando el desplazamiento
         let l = 0_i32;
-        let s = delta.saturating_sub(1);
+        let s = delta;
         let t = delta;
         let r = nums.len() as i32;
 
-        let nums_izq = &nums[(l as usize)..s.saturating_add(1)];
+        let nums_izq = &nums[(l as usize)..s];
         let nums_der = &nums[t..r as usize];
-
-        println!(
-            "{}{}",
-            "(l, s, t, r) = ".purple().italic().underline(),
-            format!("({}, {}, {}, {})", l, s, t, r)
-        );
-
-        println!(
-            "nₗₛ = {}",
-            format!("{:?}", nums_izq).cyan().italic().underline()
-        );
-        println!(
-            "nₜᵣ = {}",
-            format!("{:?}", nums_der).blue().italic().underline()
-        );
-
-        println!(
-            "τ ∈ [{},{}] | τ ∈ [{},{}]",
-            nums[l as usize],
-            nums[s],
-            nums[t],
-            nums[(r - 1) as usize]
-        );
 
         // nums[l as usize] <= target && target <= nums[s],
         // nums[t] <= target && target <= nums[(r - 1) as usize]
 
-        if nums[l as usize] <= target && target <= nums[s] {
-            println!("slice izquierdo");
+        if nums[l as usize] <= target && target <= nums[s.saturating_sub(1)] {
+            // println!("slice izquierdo");
             // slice izquierdo
             Solution::make_bs(nums_izq, target, 0_i32)
         } else {
-            println!("slice derecho");
+            // println!("slice derecho");
             // slice derecho
-            Solution::make_bs(nums_der, target, delta as i32)
+            Solution::make_bs(nums_der, target, nums_izq.len() as i32)
         }
-
-        // if nums[t] <= target && target <= nums[(r - 1) as usize] {
-        //     println!("slice derecho");
-        //     // slice derecho
-        //     Solution::make_bs(&nums[t..r as usize], target, delta as i32)
-        // } else {
-        //     println!("slice izquierdo");
-        //     // slice izquierdo
-        //     Solution::make_bs(&nums[(l as usize)..s], target, 0_i32)
-        // }
     }
 }
 
 fn get_test_cases() -> Vec<((Vec<i32>, i32), i32)> {
     vec![
-        ((vec![5, 1, 3], 5), 0),
-        ((vec![3, 5, 1], 3), 0),
-        ((vec![3, 1], 3), 0),
-        ((vec![1, 3], 3), 1),
-        ((vec![6, 7, 0, 1, 2, 4, 5], 0), 2),
-        ((vec![4, 5, 6, 7, 0, 1, 2], 0), 4),
-        ((vec![4, 5, 6, 7, 0, 1, 2], 3), -1),
-        ((vec![1], 0), -1),
+        /*0*/ ((vec![5, 1, 3], 5), 0),
+        /*1*/ ((vec![3, 5, 1], 3), 0),
+        /*2*/ ((vec![3, 1], 3), 0),
+        /*3*/ ((vec![1, 3], 3), 1),
+        /*4*/ ((vec![6, 7, 0, 1, 2, 4, 5], 0), 2),
+        /*5*/ ((vec![4, 5, 6, 7, 0, 1, 2], 0), 4),
+        /*6*/ ((vec![4, 5, 6, 7, 0, 1, 2], 3), -1),
+        /*7*/ ((vec![1], 0), -1),
+        /*8*/ ((vec![4, 5, 6, 7, 8, 1, 2, 3], 8), 4),
     ]
 }
 
 fn main() {
+    const DEFAULT: usize = 5;
     let cases = get_test_cases();
-    let (input, _expected) = &cases[0];
+
+    let idx: usize = std::env::var("TRIAL_CASE")
+        .ok()
+        .and_then(|v| v.parse().ok())
+        .unwrap_or(DEFAULT);
+
+    let (input, expected) = &cases[idx];
     let ans = Solution::search(input.0.clone(), input.1);
-    println!("{}", format!("{}", ans).green().italic().underline());
+    println!(
+        "{}:{}",
+        format!("{}", ans).green().italic().underline(),
+        format!("{}", expected).blue().italic().underline()
+    );
 }
 
 #[cfg(test)]

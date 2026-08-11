@@ -10,7 +10,7 @@ show_help() {
   echo "Usage:"
   echo "  ./holocron.sh -m \"ID. Name\"  -> [M]editate: Create new Trial"
   echo "  ./holocron.sh -t <ID>          -> [T]rain: Run Trial tests"
-  echo "  ./holocron.sh -r <ID>          -> [R]un: Execute Trial main"
+  echo "  ./holocron.sh -r <ID> [case]   -> [R]un: Execute Trial main (optional test case index)"
   echo "  ./holocron.sh -l               -> [L]og: List completed Trials"
   echo ""
   echo "Examples:"
@@ -74,8 +74,15 @@ fn get_test_cases() {
  * Ejecución a discresión
  */
 fn main() {
-    let suite = get_test_cases();
-    let ans = Solution::${PACKAGE_NAME}();
+    let cases = get_test_cases();
+
+    let idx: usize = std::env::var("TRIAL_CASE")
+        .ok()
+        .and_then(|v| v.parse().ok())
+        .unwrap_or(0);
+
+    let (input, _expected) = &cases[idx];
+    let ans = Solution::${PACKAGE_NAME}(/* input */);
     println!("{}", format!("{}", ans).green().italic().underline());
 }
 
@@ -123,10 +130,16 @@ EOF
   ;;
 
 -r | --run)
+  CASE_INDEX=$3
   BIN_NAME=$(find "$BIN_DIR" -maxdepth 1 -name "${VALUE}_*.rs" | head -1 | xargs basename 2>/dev/null | sed 's/\.rs$//')
   if [ -n "$BIN_NAME" ]; then
-    echo "🚀 Running Trial ${VALUE}..."
-    cargo run --manifest-path "${DIRECTORY}/Cargo.toml" --bin "$BIN_NAME"
+    if [ -n "$CASE_INDEX" ]; then
+      echo "🚀 Running Trial ${VALUE} (case #${CASE_INDEX})..."
+      TRIAL_CASE="$CASE_INDEX" cargo run --quiet --manifest-path "${DIRECTORY}/Cargo.toml" --bin "$BIN_NAME"
+    else
+      echo "🚀 Running Trial ${VALUE}..."
+      cargo run --quiet --manifest-path "${DIRECTORY}/Cargo.toml" --bin "$BIN_NAME"
+    fi
   else
     echo "❌ Error: Trial '${VALUE}' does not exist."
   fi
