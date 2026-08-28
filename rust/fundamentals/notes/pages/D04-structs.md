@@ -132,7 +132,7 @@ Como `caja.ver()` es `Caja::ver(&caja)` y `caja.cambiar(10)` es `Caja::cambiar(&
 <div class="grid grid-cols-2 gap-y-6 gap-x-8 items-center mt-4 w-full text-left">
 
   <div class="[&_pre]:my-0">
-    <span class="text-xs text-green-500 font-bold block mb-1">Válido: dos préstamos de solo lectura</span>
+    <span class="text-xs cp-ok font-bold block mb-1">Válido: dos préstamos de solo lectura</span>
 
 ```rust
 fn main() {
@@ -146,7 +146,7 @@ fn main() {
   </div>
 
   <div class="[&_pre]:my-0">
-    <span class="text-xs text-red-500 font-bold block mb-1">Error: préstamo vivo + método mutable</span>
+    <span class="text-xs cp-err font-bold block mb-1">Error: préstamo vivo + método mutable</span>
 
 ```rust
 fn main() {

@@ -6,7 +6,7 @@ layout: center
 
 <div class="flex flex-col gap-3 mt-3 max-w-5xl mx-auto text-left text-xs">
 
-<div class="rounded px-4 py-3 border border-gray-700">
+<div class="cp-card">
   <div class="grid gap-x-4 gap-y-2" style="grid-template-columns:1.7fr 1.1fr 1fr 1.2fr 1.2fr;font-size:0.7rem">
     <div class="opacity-50">Estructura</div><div class="opacity-50">Acceso</div><div class="opacity-50">Búsqueda</div><div class="opacity-50">Inserción</div><div class="opacity-50">Borrado</div>
     <div class="font-mono">Vec / array <span class="opacity-60">(índice)</span></div><div>O(1)</div><div>O(n)</div><div>O(1)* al final</div><div>O(n)</div>
@@ -19,14 +19,14 @@ layout: center
 
 <div class="grid grid-cols-2 gap-3">
 
-  <div class="rounded px-4 py-3 border border-gray-700 opacity-80" style="font-size:0.66rem">
+  <div class="cp-card-muted" style="font-size:0.66rem">
     <span class="font-mono">*</span> <code>push</code> / <code>pop</code> al final: O(1) amortizado.
     <br><span class="font-mono">†</span> caso promedio; peor caso O(n) por colisiones.
   </div>
 
-  <div class="rounded px-4 py-3" style="background:#F27F3D;color:#000">
+  <div class="cp-callout">
     <b>De diario:</b> Vec, HashMap, HashSet. <br>
-    <b>De aprendizaje:</b> listas y árboles importan sobre todo por lo que enseñan del ownership (<code style="background:#F29441;color:#000">Box</code>, <code style="background:#F29441;color:#000">Rc</code>, <code style="background:#F29441;color:#000">RefCell</code>), más que por lo seguido que los uses.
+    <b>De aprendizaje:</b> listas y árboles importan sobre todo por lo que enseñan del ownership (<code class="cp-code-inline">Box</code>, <code class="cp-code-inline">Rc</code>, <code class="cp-code-inline">RefCell</code>), más que por lo seguido que los uses.
   </div>
 
 </div>

@@ -13,7 +13,7 @@ layout: center
 
 <div class="flex flex-col gap-3 mt-3 max-w-5xl mx-auto text-left text-xs">
 
-<div class="rounded px-4 py-3 border border-gray-700">
+<div class="cp-card">
   <div class="grid gap-x-4 gap-y-2" style="grid-template-columns:1.7fr 0.8fr 1.3fr 0.9fr">
     <div class="opacity-50">Tipo de dato</div><div class="opacity-50">Dónde vive</div><div class="opacity-50">Al asignar / pasar / retornar</div><div class="opacity-50">¿Sigue usable?</div>
     <div class="font-mono">i32, u8, f64, bool, char</div><div>Stack</div><div><b>Copia</b> (Copy)</div><div>✅ Sí</div>
@@ -22,8 +22,8 @@ layout: center
   </div>
 </div>
 
-<div class="rounded px-4 py-3 border border-gray-700 space-y-1.5">
-  <div class="font-bold text-[#F26244] mb-1">Las 3 reglas del ownership</div>
+<div class="cp-card space-y-1.5">
+  <div class="font-bold cp-brand mb-1">Las 3 reglas del ownership</div>
   <div>① Cada valor tiene un dueño (<i>owner</i>).</div>
   <div>② Solo un dueño a la vez.</div>
   <div>③ Cuando el dueño sale de scope, el valor se destruye (<i>drop</i>).</div>
@@ -42,7 +42,7 @@ layout: center
 
 <div class="flex flex-col gap-3 mt-3 max-w-5xl mx-auto text-left text-xs">
 
-<div class="rounded px-4 py-3 border border-gray-700">
+<div class="cp-card">
   <div class="grid gap-x-4 gap-y-2" style="grid-template-columns:1fr 1.1fr 1.7fr">
     <div class="opacity-50">Referencia</div><div class="opacity-50">Permite</div><div class="opacity-50">¿Cuántas a la vez?</div>
     <div class="font-mono">&amp;T <span class="opacity-60">(compartida)</span></div><div>leer</div><div>✅ muchas simultáneas</div>
@@ -50,13 +50,13 @@ layout: center
   </div>
 </div>
 
-<div class="rounded px-4 py-3" style="background:#F27F3D;color:#000">
-  <b>Regla del borrow checker:</b> en un mismo instante puede existir <b>una sola</b> <code style="background:#F29441;color:#000">&amp;mut T</code> <b>o bien cualquier cantidad de</b> <code style="background:#F29441;color:#000">&amp;T</code> — pero <b>nunca las dos a la vez</b>. Además, toda referencia debe ser siempre válida (sin <i>dangling</i>).
+<div class="cp-callout">
+  <b>Regla del borrow checker:</b> en un mismo instante puede existir <b>una sola</b> <code class="cp-code-inline">&amp;mut T</code> <b>o bien cualquier cantidad de</b> <code class="cp-code-inline">&amp;T</code> — pero <b>nunca las dos a la vez</b>. Además, toda referencia debe ser siempre válida (sin <i>dangling</i>).
 </div>
 
-<div class="rounded px-4 py-3 border border-gray-700 space-y-2">
+<div class="cp-card space-y-2">
 
-<div class="font-bold text-[#F26244]">Lifetimes</div>
+<div class="font-bold cp-brand">Lifetimes</div>
 
 **Ecuación:** $'a = \min\left(L(\text{entradas})\right)$; válido si $\max\left(L(r)\right) \le\ 'a$ — la referencia nunca vive más que su dueño.
 
@@ -72,7 +72,7 @@ layout: center
 
 <div class="flex flex-col gap-3 mt-3 max-w-5xl mx-auto text-left text-xs">
 
-<div class="rounded px-4 py-3 border border-gray-700">
+<div class="cp-card">
   <div class="grid gap-x-4 gap-y-2" style="grid-template-columns:1.2fr 1.3fr 1.6fr 1.3fr;font-size:0.66rem">
     <div class="opacity-50">Envoltura</div><div class="opacity-50">Qué representa</div><div class="opacity-50">Cómo la abres</div><div class="opacity-50">Qué obtienes</div>
     <div class="font-mono">&amp;T / &amp;mut T</div><div>préstamo</div><div>deref <code>*</code> (casi siempre auto)</div><div>acceso sin mover</div>
@@ -87,22 +87,22 @@ layout: center
 
 <div class="grid grid-cols-2 gap-3">
 
-  <div class="rounded px-4 py-3 border border-gray-700 space-y-1.5">
-    <div class="font-bold text-[#F26244] mb-1">El método · 3 pasos</div>
+  <div class="cp-card space-y-1.5">
+    <div class="font-bold cp-brand mb-1">El método · 3 pasos</div>
     <div><b>①</b> Leer el tipo de <b>afuera → adentro</b>.</div>
     <div><b>②</b> Abrir cada capa con su operación y determinar qué entrega: <b>dueño</b> (move), <b>préstamo</b> (<code>&amp;</code>) o <b>valor Copy</b>.</div>
     <div><b>③</b> Repetir hasta llegar al dato buscado.</div>
     <div class="mt-1 opacity-70">Iteradores = el mismo patrón: <code>.iter()</code> presta, <code>.into_iter()</code> consume.</div>
   </div>
 
-  <div class="rounded px-4 py-3" style="background:#F27F3D;color:#000">
+  <div class="cp-callout">
     <div class="font-bold mb-1">Ejemplo · el nodo del árbol</div>
     <div class="font-mono" style="font-size:0.66rem;line-height:1.9">
       Option&lt;Rc&lt;RefCell&lt;TreeNode&gt;&gt;&gt;<br>
-      → <code style="background:#F29441;color:#000">if let Some(rc)</code> → &amp;Rc&lt;..&gt;<br>
+      → <code class="cp-code-inline">if let Some(rc)</code> → &amp;Rc&lt;..&gt;<br>
       → (Rc se desreferencia solo)<br>
-      → <code style="background:#F29441;color:#000">.borrow()</code> → Ref&lt;TreeNode&gt;<br>
-      → <code style="background:#F29441;color:#000">.val</code> ✅
+      → <code class="cp-code-inline">.borrow()</code> → Ref&lt;TreeNode&gt;<br>
+      → <code class="cp-code-inline">.val</code> ✅
     </div>
   </div>
 
@@ -118,7 +118,7 @@ layout: center
 
 <div class="flex flex-col gap-3 mt-3 max-w-5xl mx-auto text-left text-xs">
 
-<div class="rounded px-4 py-3 border border-gray-700">
+<div class="cp-card">
   <div class="grid gap-x-4 gap-y-2" style="grid-template-columns:1.6fr 1.4fr 1.4fr;font-size:0.68rem">
     <div class="opacity-50">Error del compilador</div><div class="opacity-50">Qué regla violaste</div><div class="opacity-50">Fix típico</div>
     <div class="font-mono">use of moved value</div><div>usaste un valor del heap <b>después</b> de moverlo</div><div><code>.clone()</code>, o pasar <code>&amp;x</code> en vez de <code>x</code></div>
@@ -129,14 +129,14 @@ layout: center
   </div>
 </div>
 
-<div class="rounded px-4 py-3 border border-gray-700 space-y-1.5">
-  <div class="font-bold text-[#F26244] mb-1">Corrida mental — tres preguntas en orden</div>
+<div class="cp-card space-y-1.5">
+  <div class="font-bold cp-brand mb-1">Corrida mental — tres preguntas en orden</div>
   <div><b>①</b> ¿El dato vive en Heap? → asignarlo o pasarlo lo <b>mueve</b> (el original queda inutilizable). ¿En Stack? → se <b>copia</b>, ambos siguen vivos.</div>
   <div><b>②</b> ¿Hay una <code>&amp;mut</code> y una <code>&amp;</code> vivas a la vez sobre el mismo dato? → prohibido: equivale a escribir mientras alguien lee.</div>
   <div><b>③</b> ¿La referencia devuelta o guardada vive más que su dueño? → <i>dangling</i>, prohibido.</div>
 </div>
 
-<div class="rounded px-4 py-3" style="background:#F27F3D;color:#000">
+<div class="cp-callout">
   En corto, casi todo error de memoria es uno de tres: <b>un valor movido y vuelto a usar</b> · <b>lectura y escritura mezcladas</b> · <b>una referencia que vive más que su dueño</b>
 </div>
 

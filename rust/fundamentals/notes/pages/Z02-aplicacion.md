@@ -27,15 +27,15 @@ let ans  = Solution::get_vec(head);
 
   </div>
 
-<div class="rounded px-4 py-3 border border-gray-700 text-sm space-y-2">
+<div class="cp-card text-sm space-y-2">
 
-<div class="font-bold text-[#F26244]">Corrida mental</div>
+<div class="font-bold cp-brand">Corrida mental</div>
 
 `Node = Option<Box<ListNode>>` vive en el **heap** → pasarlo a `reverse_list` lo **mueve**.
 
 Sin `.clone()`, `input` quedaría inutilizable después de esa línea. La copia conserva el original para el resto del test.
 
-<div class="opacity-70">Cheatsheet: <b>Heap → Movimiento</b> · ¿usable? No, salvo <code style="background:#F29441;color:#000">.clone()</code></div>
+<div class="opacity-70">Cheatsheet: <b>Heap → Movimiento</b> · ¿usable? No, salvo <code class="cp-code-inline">.clone()</code></div>
 
 </div>
 
@@ -64,15 +64,15 @@ Solution::remove_duplicates(&mut arr);
 
   </div>
 
-<div class="rounded px-4 py-3 border border-gray-700 text-sm space-y-2">
+<div class="cp-card text-sm space-y-2">
 
-<div class="font-bold text-[#F26244]">Corrida mental</div>
+<div class="font-bold cp-brand">Corrida mental</div>
 
 `&mut Vec<i32>` es un préstamo **exclusivo**: mientras dura, nadie más puede leer ni escribir `arr`.
 
 Permite mutar in-place con `retain` sin mover el `Vec` ni devolver uno nuevo.
 
-<div class="opacity-70">Cheatsheet: <b>&mut T → una sola</b>, y sin <code style="background:#F29441;color:#000">&</code> activas</div>
+<div class="opacity-70">Cheatsheet: <b>&mut T → una sola</b>, y sin <code class="cp-code-inline">&</code> activas</div>
 
 </div>
 
@@ -99,9 +99,9 @@ for word in strs.iter() {   // word: &String
 
   </div>
 
-<div class="rounded px-4 py-3 border border-gray-700 text-sm space-y-2">
+<div class="cp-card text-sm space-y-2">
 
-<div class="font-bold text-[#F26244]">Corrida mental</div>
+<div class="font-bold cp-brand">Corrida mental</div>
 
 `.iter()` entrega `&String`: préstamos **compartidos**, de los que pueden existir muchos a la vez.
 
@@ -135,9 +135,9 @@ while i < j {
 
   </div>
 
-<div class="rounded px-4 py-3 border border-gray-700 text-sm space-y-2">
+<div class="cp-card text-sm space-y-2">
 
-<div class="font-bold text-[#F26244]">Corrida mental</div>
+<div class="font-bold cp-brand">Corrida mental</div>
 
 `i`, `j` (`usize`) y los `height[i]` (`i32`) viven en el **stack** → se **copian**.
 
@@ -173,9 +173,9 @@ head
 
   </div>
 
-<div class="rounded px-4 py-3 border border-gray-700 text-sm space-y-2">
+<div class="cp-card text-sm space-y-2">
 
-<div class="font-bold text-[#F26244]">Corrida mental</div>
+<div class="font-bold cp-brand">Corrida mental</div>
 
 `iter: &mut Node` es un préstamo **exclusivo** que se va reapuntando al `next` de cada nodo.
 
@@ -213,9 +213,9 @@ fn pre_order(n: &Node) {
 
   </div>
 
-<div class="rounded px-4 py-3 border border-gray-700 text-sm space-y-2">
+<div class="cp-card text-sm space-y-2">
 
-<div class="font-bold text-[#F26244]">Corrida mental — 4 capas</div>
+<div class="font-bold cp-brand">Corrida mental — 4 capas</div>
 
 <div class="grid gap-x-3 gap-y-1" style="grid-template-columns:auto 1fr;font-size:0.72rem">
   <div class="font-mono opacity-80">Option</div><div>¿hay nodo? → <code>if let Some</code></div>
@@ -255,9 +255,9 @@ for (idx, val) in nums.iter().enumerate() {
 
   </div>
 
-<div class="rounded px-4 py-3 border border-gray-700 text-sm space-y-2">
+<div class="cp-card text-sm space-y-2">
 
-<div class="font-bold text-[#F26244]">Corrida mental</div>
+<div class="font-bold cp-brand">Corrida mental</div>
 
 `visto.get(&falta)` devuelve `Option<&i32>` — el compilador obliga a manejar el caso "no está" con `if let Some`.
 
@@ -292,9 +292,9 @@ false
 
   </div>
 
-<div class="rounded px-4 py-3 border border-gray-700 text-sm space-y-2">
+<div class="cp-card text-sm space-y-2">
 
-<div class="font-bold text-[#F26244]">Corrida mental</div>
+<div class="font-bold cp-brand">Corrida mental</div>
 
 `contains(&n)` **presta** el elemento (`&i32`) para consultar sin moverlo — el `Vec` original queda intacto.
 

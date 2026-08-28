@@ -44,7 +44,7 @@ layout: center
 
 <div class="grid grid-cols-2 gap-x-6 mt-4 w-full text-left">
   <div>
-    <span class="text-xs text-green-500 font-bold block mb-1">Válido: Muchas lecturas</span>
+    <span class="text-xs cp-ok font-bold block mb-1">Válido: Muchas lecturas</span>
 
 ```rust
 fn main() {
@@ -58,7 +58,7 @@ fn main() {
   </div>
 
   <div>
-    <span class="text-xs text-red-500 font-bold block mb-1">Error: Mezcla de lectura y escritura</span>
+    <span class="text-xs cp-err font-bold block mb-1">Error: Mezcla de lectura y escritura</span>
 
 ```rust
 fn main() {
