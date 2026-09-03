@@ -18,21 +18,20 @@ Este es mi campo de entrenamiento personal en los caminos de la Fuerza. Aquí, c
 
 ## 🏛️ Estructura del Templo
 
-El Templo se organiza por **lenguaje**. Cada Prueba se identifica por su ID de LeetCode. Dentro del camino Rust hay dos senderos: *fundamentals* (dominar el lenguaje) y *building* (construir cosas útiles con él).
+El Templo se organiza por **lenguaje**. Cada Prueba se identifica por su ID de LeetCode. Dentro del camino Rust hay dos senderos: *fundamentals* (dominar el lenguaje) y *building* (construir cosas útiles con él). Los Pergaminos de estudio de ambos viven juntos en un solo deck, dentro de `fundamentals/notes`.
 
 ```text
 .
 ├── rust/
 │   ├── fundamentals/        # El camino del dominio del lenguaje
-│   │   ├── notes/           # Los Pergaminos (presentación de estudio)
+│   │   ├── notes/           # Los Pergaminos (presentación de estudio; fundamentos + aplicado)
 │   │   └── trials/          # La Cámara Rust (cargo test)
 │   │       ├── Cargo.toml   # Un solo proyecto para gobernarlos a todos
 │   │       ├── holocron.sh  # El Holocrón — camino Rust
 │   │       └── src/bin/     # Un pergamino por Prueba
 │   │           ├── 1_two_sum.rs
 │   │           └── ...
-│   └── building/            # El camino de la construcción (APIs, datos)
-│       └── notes/           # Los Pergaminos aplicados
+│   └── building/            # El camino de la construcción (APIs, datos) — proyectos Cargo, por crear
 ├── python/
 │   ├── trials/              # La Cámara Python (Pytest)
 │   │   ├── 1.py             # Two Sum
@@ -47,17 +46,15 @@ El Templo se organiza por **lenguaje**. Cada Prueba se identifica por su ID de L
 └── README.md                # El Códex Jedi
 ```
 
-### Los tres Pergaminos
+### Los dos Pergaminos
 
 | Deck | Tema | Puerto |
 | --- | --- | --- |
-| `rust/fundamentals/notes` | **Rust Fundamentos** — el lenguaje | 3031 |
-| `rust/building/notes` | **Rust Aplicado** — construir con el lenguaje | 3032 |
+| `rust/fundamentals/notes` | **Rust Fundamentos + Aplicado** — el lenguaje y cómo construir con él | 3031 |
 | `docs/algorithms` | **Algoritmos** — patrones, independiente del lenguaje | 3033 |
 
 ```bash
 pnpm --dir rust/fundamentals/notes run dev
-pnpm --dir rust/building/notes run dev
 pnpm --dir docs/algorithms run dev
 ```
 

@@ -1879,3 +1879,992 @@ Existe una sola referencia mutable `r`. Usar `r.len()` (lectura a través de
 no crea aliasing. Las restricciones de Rust son sobre referencias **distintas**
 al mismo dato, no sobre operaciones sucesivas a través de la misma referencia.
 El código es completamente seguro y válido.
+
+---
+layout: default
+---
+
+## Ejercicio 57: El vector que se fue de gira
+<br/>
+
+```rust
+fn main() {
+    let nombres = vec![String::from("ana"), String::from("beto")];
+    for n in nombres.into_iter() {
+        println!("{n}");
+    }
+    println!("quedan {}", nombres.len());
+}
+```
+
+🤔 El bucle recorre los nombres y luego se pide el largo del vector. ¿Compila?
+
+---
+layout: default
+---
+
+## Respuesta 57: El vector que se fue de gira
+<br/>
+
+No compila: **E0382, borrow of moved value: `nombres`**.
+
+`into_iter()` toma la propiedad del vector para entregar los elementos por valor. Al
+terminar el bucle, `nombres` ya no existe.
+
+```rust
+    for n in nombres.iter() {        // o: for n in &nombres
+        println!("{n}");
+    }
+    println!("quedan {}", nombres.len());   // 2
+```
+
+Regla: `iter()` presta, `into_iter()` consume. El `for x in v` sin `&` es la segunda.
+
+---
+layout: default
+---
+
+## Ejercicio 58: Modificar la lista mientras se lee
+<br/>
+
+```rust
+fn main() {
+    let mut v = vec![1, 2, 3];
+    for n in &v {
+        if *n == 2 {
+            v.push(99);
+        }
+    }
+}
+```
+
+❌ Se recorre el vector y, al encontrar el 2, se agrega un elemento. ¿Qué dice el compilador?
+
+---
+layout: default
+---
+
+## Respuesta 58: Modificar la lista mientras se lee
+<br/>
+
+**E0502: cannot borrow `v` as mutable because it is also borrowed as immutable.**
+
+El `for` mantiene vivo un préstamo inmutable durante todo el bucle, y `push` pide uno
+mutable. Es la regla 1 del borrow checker, y aquí protege algo concreto: `push` puede
+reasignar el buffer y dejar al iterador apuntando a memoria vieja.
+
+```rust
+    let posiciones: Vec<usize> = v.iter()
+        .enumerate().filter(|(_, n)| **n == 2).map(|(i, _)| i).collect();
+    for _ in posiciones { v.push(99); }   // el préstamo ya terminó
+```
+
+---
+layout: default
+---
+
+## Ejercicio 59: Sacar un elemento por su índice
+<br/>
+
+```rust
+fn main() {
+    let palabras = vec![String::from("hola")];
+    let primera = palabras[0];
+    println!("{primera}");
+}
+```
+
+🤔 Se quiere la primera palabra del vector. ¿Por qué falla algo tan simple?
+
+---
+layout: default
+---
+
+## Respuesta 59: Sacar un elemento por su índice
+<br/>
+
+**E0507: cannot move out of index of `Vec<String>`.**
+
+Indexar no copia: intenta *mover* el `String` fuera del vector, y eso dejaría un
+hueco en una posición que el vector sigue creyendo válida. Con `Vec<i32>` sí
+funcionaría, porque `i32` es `Copy`.
+
+Tres salidas, según lo que se quiera:
+
+```rust
+let primera = &palabras[0];            // prestarla
+let primera = palabras[0].clone();     // copiarla
+let primera = palabras.remove(0);      // sacarla de verdad del vector
+```
+
+---
+layout: default
+---
+
+## Ejercicio 60: El map que no hizo nada
+<br/>
+
+```rust
+fn main() {
+    let v = vec![1, 2, 3];
+    v.iter().map(|n| n * 2);
+    println!("{v:?}");       // [1, 2, 3]
+}
+```
+
+🤔 El código compila y corre, pero el vector sale intacto. ¿Por qué?
+
+---
+layout: default
+---
+
+## Respuesta 60: El map que no hizo nada
+<br/>
+
+Compila, con una advertencia que lo dice todo: **unused `Map` that must be used**,
+y la nota *iterators are lazy and do nothing unless consumed*.
+
+`map` no recorre nada: construye un iterador que describe la operación. Sin
+consumidor, nadie llama a `next` y nadie ejecuta el closure.
+
+```rust
+let doblados: Vec<i32> = v.iter().map(|n| n * 2).collect();   // [2, 4, 6]
+```
+
+Y `map` nunca modifica el original: devuelve valores nuevos. Para cambiar en su
+lugar hace falta `iter_mut`.
+
+---
+layout: default
+---
+
+## Ejercicio 61: Vaciar un Option prestado
+<br/>
+
+```rust
+fn tomar(opt: &mut Option<String>) -> Option<String> {
+    *opt
+}
+```
+
+❌ La función recibe el `Option` por referencia mutable y quiere devolver su contenido. ¿Compila?
+
+---
+layout: default
+---
+
+## Respuesta 61: Vaciar un Option prestado
+<br/>
+
+**E0507: cannot move out of `*opt` which is behind a mutable reference.**
+
+`opt` es un préstamo, no el dueño. Mover el valor afuera dejaría al dueño real con un
+hueco detrás de una referencia que sigue viva.
+
+```rust
+fn tomar(opt: &mut Option<String>) -> Option<String> {
+    opt.take()       // deja None en su lugar y devuelve lo que había
+}
+```
+
+`Option::take` es `mem::replace(self, None)`: intercambia en vez de sacar, así que en
+ningún instante hay un hueco.
+
+---
+layout: default
+---
+
+## Ejercicio 62: El valor del mapa
+<br/>
+
+```rust
+use std::collections::HashMap;
+
+fn main() {
+    let mut mapa = HashMap::new();
+    mapa.insert("a", String::from("uno"));
+    let valor = mapa["a"];
+    println!("{valor}");
+}
+```
+
+🤔 Se busca el valor de una llave en un `HashMap<&str, String>`. ¿Cuál es el problema?
+
+---
+layout: default
+---
+
+## Respuesta 62: El valor del mapa
+<br/>
+
+**E0507: cannot move out of index of `HashMap<&str, String>`.**
+
+Es el mismo error del ejercicio 59: indexar un mapa devuelve el valor por
+referencia, y asignarlo a una variable intenta moverlo fuera de la estructura.
+
+```rust
+let valor = &mapa["a"];              // prestado
+let valor = mapa["a"].clone();       // copiado
+let valor = mapa.get("a");           // Option<&String>, sin panic
+```
+
+`mapa["a"]` además hace *panic* si la llave no existe. `get` devuelve `Option`.
+
+---
+layout: default
+---
+
+## Ejercicio 63: El collect indeciso
+<br/>
+
+```rust
+fn main() {
+    let v = vec![1, 2, 3];
+    let doblados = v.iter().map(|n| n * 2).collect();
+    println!("{doblados:?}");
+}
+```
+
+❌ El `collect` no dice a dónde va. ¿Qué reclama el compilador?
+
+---
+layout: default
+---
+
+## Respuesta 63: El collect indeciso
+<br/>
+
+**E0283: type annotations needed**, con la nota *cannot satisfy
+`_: FromIterator<i32>`*.
+
+`collect` puede producir un `Vec`, un `HashSet`, un `String` o cualquier tipo que
+implemente `FromIterator`. Sin destino declarado, el compilador no tiene manera de
+elegir. Dos formas de decírselo:
+
+```rust
+let doblados: Vec<i32> = v.iter().map(|n| n * 2).collect();
+let doblados = v.iter().map(|n| n * 2).collect::<Vec<i32>>();
+```
+
+---
+layout: default
+---
+
+## Ejercicio 64: Sumarle diez a cada elemento
+<br/>
+
+```rust
+fn main() {
+    let mut v = vec![1, 2, 3];
+    for n in v.iter() {
+        *n += 10;
+    }
+}
+```
+
+🤔 El vector es `mut` y el bucle intenta modificar cada elemento. ¿Basta con eso?
+
+---
+layout: default
+---
+
+## Respuesta 64: Sumarle diez a cada elemento
+<br/>
+
+No: **E0594, cannot assign to `*n`, which is behind a `&` reference**. Y de paso
+otra advertencia, *variable does not need to be mutable*, que delata el problema: el
+`mut` del vector no se está usando.
+
+`iter()` entrega `&T`, de solo lectura. Que el dueño sea mutable no vuelve mutables
+los préstamos que reparte.
+
+```rust
+    for n in v.iter_mut() {   // entrega &mut i32
+        *n += 10;
+    }                          // [11, 12, 13]
+```
+
+Las tres formas: `iter()` da `&T`, `iter_mut()` da `&mut T`, `into_iter()` da `T`.
+
+---
+layout: default
+---
+
+## Ejercicio 65: El nodo de tamaño infinito
+<br/>
+
+```rust
+struct Nodo {
+    valor: i32,
+    siguiente: Option<Nodo>,
+}
+```
+
+❌ Una lista enlazada declarada de la forma más directa. ¿Qué error da, y por qué?
+
+---
+layout: default
+---
+
+## Respuesta 65: El nodo de tamaño infinito
+<br/>
+
+**E0072: recursive type `Nodo` has infinite size.**
+
+Rust necesita el tamaño exacto de cada tipo al compilar. `Nodo` contiene un `Nodo`,
+que contiene otro: la cuenta no termina. El `Option` no salva nada, porque su tamaño
+depende del de su variante más grande.
+
+```rust
+struct Nodo {
+    valor: i32,
+    siguiente: Option<Box<Nodo>>,   // ahora el campo mide un puntero
+}
+```
+
+`Box` corta la recursión porque su tamaño no depende de `T`: siempre es un puntero.
+
+---
+layout: default
+---
+
+## Ejercicio 66: La cuenta de los dueños
+<br/>
+
+```rust
+use std::rc::Rc;
+
+fn main() {
+    let a = Rc::new(String::from("dato"));
+    let b = Rc::clone(&a);
+    {
+        let _c = Rc::clone(&a);
+        println!("dentro: {}", Rc::strong_count(&a));
+    }
+    println!("fuera: {}", Rc::strong_count(&a));
+}
+```
+
+🤔 Este código compila y corre. ¿Qué imprime en cada línea?
+
+---
+layout: default
+---
+
+## Respuesta 66: La cuenta de los dueños
+<br/>
+
+`dentro: 3` y `fuera: 2`.
+
+Dentro del bloque hay tres dueños vivos: `a`, `b` y `_c`. Al cerrar el bloque, `_c`
+sale de scope, su `Drop` decrementa el contador y quedan dos.
+
+El valor no se libera hasta que el contador llega a cero, o sea cuando mueran también
+`a` y `b` al terminar `main`. `Rc::clone` no duplica el `String`: solo suma uno al
+contador, y eso es todo lo que cuesta.
+
+---
+layout: default
+---
+
+## Ejercicio 67: Modificar lo compartido
+<br/>
+
+```rust
+use std::rc::Rc;
+
+struct Config { nivel: u8 }
+
+fn main() {
+    let c = Rc::new(Config { nivel: 1 });
+    let otro = Rc::clone(&c);
+    otro.nivel = 2;
+}
+```
+
+❌ Dos dueños del mismo dato, y uno intenta cambiarlo. ¿Compila?
+
+---
+layout: default
+---
+
+## Respuesta 67: Modificar lo compartido
+<br/>
+
+**E0594: cannot assign to data in an `Rc`**, con la ayuda *trait `DerefMut` is
+required to modify through a dereference, but it is not implemented for `Rc<Config>`*.
+
+`Rc` resuelve la propiedad múltiple, no la mutación. Con dos dueños vivos no existe
+acceso exclusivo, que es lo que la regla 1 del borrow checker exige para mutar. Por
+eso `Rc` no implementa `DerefMut`.
+
+```rust
+let c = Rc::new(RefCell::new(Config { nivel: 1 }));
+let otro = Rc::clone(&c);
+otro.borrow_mut().nivel = 2;      // la regla se verifica en ejecución
+```
+
+---
+layout: default
+---
+
+## Ejercicio 68: El que compila pero no corre
+<br/>
+
+```rust
+use std::cell::RefCell;
+
+fn main() {
+    let celda = RefCell::new(vec![1, 2, 3]);
+    let lectura = celda.borrow();
+    celda.borrow_mut().push(4);
+    println!("{lectura:?}");
+}
+```
+
+🤔 Compila sin una sola advertencia. ¿Qué pasa al ejecutarlo?
+
+---
+layout: default
+---
+
+## Respuesta 68: El que compila pero no corre
+<br/>
+
+Aborta: **thread 'main' panicked at: RefCell already borrowed**.
+
+`RefCell` no elimina la regla de borrowing, la mueve al tiempo de ejecución. El
+guard que devuelve `borrow()` sigue vivo porque `lectura` se usa en la última línea,
+así que `borrow_mut()` encuentra la bandera puesta y hace *panic*.
+
+```rust
+    let copia = celda.borrow().clone();   // el guard muere aquí
+    celda.borrow_mut().push(4);
+    println!("{copia:?}");
+```
+
+Quita el `println!` final y el mismo programa corre, porque NLL mata el guard antes.
+El préstamo vale hasta donde llegue el guard.
+
+---
+layout: default
+---
+
+## Ejercicio 69: La colección de figuras
+<br/>
+
+```rust
+trait Figura { fn area(&self) -> f64; }
+struct Circulo(f64);
+struct Cuadrado(f64);
+// impl Figura para los dos...
+
+fn main() {
+    let figuras = vec![Circulo(1.0), Cuadrado(2.0)];
+    for f in &figuras { println!("{}", f.area()); }
+}
+```
+
+❌ Un vector con un círculo y un cuadrado, ambos implementan `Figura`. ¿Compila?
+
+---
+layout: default
+---
+
+## Respuesta 69: La colección de figuras
+<br/>
+
+**E0308: mismatched types.** Un `Vec<T>` exige que todos sus elementos sean del
+mismo tipo `T`, e implementar el mismo trait no los vuelve el mismo tipo.
+
+```rust
+let figuras: Vec<Box<dyn Figura>> = vec![
+    Box::new(Circulo(1.0)),
+    Box::new(Cuadrado(2.0)),
+];
+```
+
+Ahora el tipo del elemento es siempre el mismo puntero, y lo que cambia es a dónde
+apunta. `dyn` borra el tipo concreto y `Box` le devuelve un tamaño.
+
+---
+layout: default
+---
+
+## Ejercicio 70: El trait que no puede ser dyn
+<br/>
+
+```rust
+trait Duplicable { fn duplicar(&self) -> Self; }
+
+struct Caja(i32);
+impl Duplicable for Caja {
+    fn duplicar(&self) -> Caja { Caja(self.0) }
+}
+
+fn main() {
+    let v: Vec<Box<dyn Duplicable>> = vec![Box::new(Caja(1))];
+}
+```
+
+🤔 El trait tiene un solo método y el tipo lo implementa. ¿Por qué no se puede guardar en un `Box<dyn>`?
+
+---
+layout: default
+---
+
+## Respuesta 70: El trait que no puede ser dyn
+<br/>
+
+**E0038: the trait `Duplicable` is not dyn compatible.**
+
+`duplicar` devuelve `Self`. Detrás de un `dyn` no se sabe qué tipo es `Self`, así que
+tampoco se sabe cuánto mide el valor de retorno ni cómo construir la entrada de la
+tabla de métodos. Es la misma razón por la que no existe `Box<dyn Clone>`.
+
+```rust
+trait Duplicable {
+    fn duplicar(&self) -> Self where Self: Sized;   // fuera de la tabla
+    fn etiqueta(&self) -> String;                   // esta sí queda
+}
+```
+
+El `where Self: Sized` deja ese método disponible solo por genérico, y el resto del
+trait vuelve a servir como `dyn`.
+
+---
+layout: default
+---
+
+## Ejercicio 71: Los que nunca se liberan
+<br/>
+
+```rust
+struct Nodo { valor: i32, otro: RefCell<Option<Rc<Nodo>>> }
+
+impl Drop for Nodo {
+    fn drop(&mut self) { println!("liberando {}", self.valor); }
+}
+
+fn main() {
+    let a = Rc::new(Nodo { valor: 1, otro: RefCell::new(None) });
+    let b = Rc::new(Nodo { valor: 2, otro: RefCell::new(None) });
+    *a.otro.borrow_mut() = Some(Rc::clone(&b));
+    *b.otro.borrow_mut() = Some(Rc::clone(&a));
+    println!("fin de main");
+}
+```
+
+🤔 Compila y corre sin error. Cada `Nodo` imprime al liberarse. ¿Qué sale?
+
+---
+layout: default
+---
+
+## Respuesta 71: Los que nunca se liberan
+<br/>
+
+Sale solo `fin de main`. **Ninguno de los dos `Drop` corre nunca.**
+
+`a` apunta a `b` y `b` apunta a `a`, así que al terminar `main` cada contador baja de
+2 a 1 y ninguno llega a cero. La memoria se filtra. Es código seguro: no hay acceso
+inválido, solo memoria que nadie libera.
+
+La salida es `Weak<T>`, una referencia que no cuenta como dueño:
+
+```rust
+*b.otro.borrow_mut() = Some(Rc::downgrade(&a));   // Weak, rompe el ciclo
+```
+
+Convención: los enlaces hacia abajo con `Rc`, los que regresan con `Weak`.
+
+---
+layout: default
+---
+
+## Ejercicio 72: El préstamo que se colgó solo
+<br/>
+
+```rust
+impl Registro {
+    fn agregar(&self, n: i32) {
+        let items = self.items.borrow();
+        if items.len() < 3 {
+            self.items.borrow_mut().push(n);
+        }
+    }
+}
+```
+
+❌ Un método que consulta antes de escribir, todo dentro del mismo tipo. Compila. ¿Corre?
+
+---
+layout: default
+---
+
+## Respuesta 72: El préstamo que se colgó solo
+<br/>
+
+Aborta en la primera llamada: **panicked at: RefCell already borrowed**.
+
+El guard de `borrow()` está ligado a `items`, así que vive hasta el final del método.
+Cuando la línea del `push` pide el préstamo mutable, el inmutable sigue puesto. El
+`if` no cierra el préstamo: lo que lo cierra es la muerte del guard.
+
+```rust
+    fn agregar(&self, n: i32) {
+        let cabe = self.items.borrow().len() < 3;   // el guard muere aquí
+        if cabe {
+            self.items.borrow_mut().push(n);
+        }
+    }
+```
+
+Regla práctica con `RefCell`: que ningún guard viva más de una expresión.
+
+---
+layout: default
+---
+
+## Ejercicio 73: El closure que se quedó corto
+<br/>
+
+```rust
+use std::thread;
+
+fn main() {
+    let datos = vec![1, 2, 3];
+    let h = thread::spawn(|| {
+        println!("{datos:?}");
+    });
+    h.join().unwrap();
+}
+```
+
+❌ Se lanza un hilo que imprime un vector declarado en `main`. ¿Qué falta?
+
+---
+layout: default
+---
+
+## Respuesta 73: El closure que se quedó corto
+<br/>
+
+**E0373: closure may outlive the current function, but it borrows `datos`, which is
+owned by the current function.**
+
+El closure toma `datos` prestado, pero el compilador no puede probar que el hilo
+termine antes que `main`. Un préstamo que quizá sobreviva a su dueño es la regla 2 del
+borrow checker, y aquí se aplica entre hilos.
+
+```rust
+    let h = thread::spawn(move || {   // se lleva la propiedad
+        println!("{datos:?}");
+    });
+```
+
+El `join()` no cuenta como prueba: el compilador exige `'static` en la firma de
+`spawn`, sin importar lo que hagas después.
+
+---
+layout: default
+---
+
+## Ejercicio 74: El Rc que no cruzó
+<br/>
+
+```rust
+use std::rc::Rc;
+use std::thread;
+
+fn main() {
+    let compartido = Rc::new(vec![1, 2, 3]);
+    let copia = Rc::clone(&compartido);
+    let h = thread::spawn(move || println!("{copia:?}"));
+    h.join().unwrap();
+}
+```
+
+🤔 Se comparte un vector con un hilo usando `Rc`, y el closure sí lleva `move`. ¿Basta?
+
+---
+layout: default
+---
+
+## Respuesta 74: El Rc que no cruzó
+<br/>
+
+**E0277: `Rc<Vec<i32>>` cannot be sent between threads safely.**
+
+El contador de `Rc` no es atómico: dos hilos incrementándolo a la vez pueden perder
+una cuenta y liberar el valor todavía en uso. Por eso `Rc` no implementa `Send`, y el
+compilador lo detiene al compilar en lugar de dejarlo fallar en ejecución.
+
+```rust
+use std::sync::Arc;
+let compartido = Arc::new(vec![1, 2, 3]);
+let copia = Arc::clone(&compartido);
+```
+
+`Arc` es el mismo tipo con el contador atómico. Paga un poco más por operación, y es
+lo único que cambia.
+
+---
+layout: default
+---
+
+## Ejercicio 75: Contar con Arc
+<br/>
+
+```rust
+use std::sync::Arc;
+use std::thread;
+
+fn main() {
+    let contador = Arc::new(0);
+    let mut hilos = vec![];
+    for _ in 0..4 {
+        let c = Arc::clone(&contador);
+        hilos.push(thread::spawn(move || { *c += 1; }));
+    }
+}
+```
+
+❌ Cuatro hilos incrementan un contador compartido con `Arc`. ¿Compila?
+
+---
+layout: default
+---
+
+## Respuesta 75: Contar con Arc
+<br/>
+
+**E0594: cannot assign to data in an `Arc`.**
+
+Es el mismo error del ejercicio 67, ahora entre hilos. `Arc` resuelve *quién es el
+dueño*, no *quién puede mutar*. Con cuatro dueños vivos no hay acceso exclusivo.
+
+```rust
+let contador = Arc::new(Mutex::new(0));
+// ...
+hilos.push(thread::spawn(move || { *c.lock().unwrap() += 1; }));
+```
+
+Son dos problemas y dos tipos: `Arc` por fuera para la propiedad compartida, `Mutex`
+por dentro para la mutación. Es el `Rc<RefCell<T>>` del capítulo 6, entre hilos.
+
+---
+layout: default
+---
+
+## Ejercicio 76: El Mutex sin envoltura
+<br/>
+
+```rust
+use std::sync::Mutex;
+use std::thread;
+
+fn main() {
+    let contador = Mutex::new(0);
+    let mut hilos = vec![];
+    for _ in 0..4 {
+        hilos.push(thread::spawn(move || {
+            *contador.lock().unwrap() += 1;
+        }));
+    }
+}
+```
+
+🤔 Ahora sí hay `Mutex`, pero no `Arc`. Cada hilo lo usa directo. ¿Qué falla?
+
+---
+layout: default
+---
+
+## Respuesta 76: El Mutex sin envoltura
+<br/>
+
+**E0382: borrow of moved value: `contador`.**
+
+El `move` del primer hilo se lleva el `Mutex` completo, así que en la segunda vuelta
+del bucle ya no hay nada que mover. `Mutex` da exclusión mutua, no propiedad
+compartida: sigue teniendo un solo dueño.
+
+```rust
+let contador = Arc::new(Mutex::new(0));
+for _ in 0..4 {
+    let c = Arc::clone(&contador);      // un dueño más por hilo
+    hilos.push(thread::spawn(move || { *c.lock().unwrap() += 1; }));
+}
+```
+
+`Arc<Mutex<T>>` aparece siempre junto porque cada uno resuelve la mitad.
+
+---
+layout: default
+---
+
+## Ejercicio 77: El clon fuera del bucle
+<br/>
+
+```rust
+fn main() {
+    let contador = Arc::new(Mutex::new(0));
+    let c = Arc::clone(&contador);
+    let mut hilos = vec![];
+    for _ in 0..4 {
+        hilos.push(thread::spawn(move || { *c.lock().unwrap() += 1; }));
+    }
+}
+```
+
+❌ Ya están `Arc` y `Mutex`, y hay un `Arc::clone`. Pero está en el lugar equivocado.
+
+---
+layout: default
+---
+
+## Respuesta 77: El clon fuera del bucle
+<br/>
+
+**E0382: use of moved value: `c`.**
+
+Hay un solo clon para cuatro hilos. El primer `move` se lleva `c` y la segunda vuelta
+del bucle ya no tiene qué mover. El `Arc::clone` va **dentro** del bucle, uno por
+hilo:
+
+```rust
+    for _ in 0..4 {
+        let c = Arc::clone(&contador);
+        hilos.push(thread::spawn(move || { *c.lock().unwrap() += 1; }));
+    }
+```
+
+Cada iteración crea su propio dueño. El contador de `Arc` llega a cinco y baja a uno
+conforme los hilos terminan.
+
+---
+layout: default
+---
+
+## Ejercicio 78: El candado que se esperó a sí mismo
+<br/>
+
+```rust
+use std::sync::Mutex;
+
+fn main() {
+    let m = Mutex::new(0);
+    let a = m.lock().unwrap();
+    let b = m.lock().unwrap();
+    println!("{} {}", *a, *b);
+}
+```
+
+🤔 Compila sin advertencias. ¿Qué imprime?
+
+---
+layout: default
+---
+
+## Respuesta 78: El candado que se esperó a sí mismo
+<br/>
+
+Nada. **El programa se cuelga para siempre** y hay que matarlo.
+
+Es la diferencia entre `RefCell` y `Mutex`: uno aborta al detectar el segundo
+préstamo, el otro **espera** a que se libere el primero. Y el primero lo tiene el
+mismo hilo que está esperando, así que nadie lo va a soltar.
+
+```rust
+    let total = { let a = m.lock().unwrap(); *a };  // muere aquí
+    let b = m.lock().unwrap();
+```
+
+Es el modo de falla que no tiene análogo mono-hilo. Dos candados distintos tomados en
+distinto orden por dos hilos producen el mismo cuelgue.
+
+---
+layout: default
+---
+
+## Ejercicio 79: Los hilos que nadie esperó
+<br/>
+
+```rust
+use std::thread;
+use std::time::Duration;
+
+fn main() {
+    thread::spawn(|| {
+        thread::sleep(Duration::from_millis(50));
+        println!("desde el hilo");
+    });
+    println!("fin de main");
+}
+```
+
+🤔 El hilo duerme 50 ms antes de imprimir, y `main` no llama a `join`. ¿Qué sale?
+
+---
+layout: default
+---
+
+## Respuesta 79: Los hilos que nadie esperó
+<br/>
+
+Solo `fin de main`. Probado tres veces, el mensaje del hilo no aparece nunca.
+
+Cuando el hilo principal termina, el proceso termina y los demás hilos mueren donde
+estén. `spawn` devuelve un `JoinHandle` justamente para poder esperarlos:
+
+```rust
+    let h = thread::spawn(|| { /* ... */ });
+    println!("fin de main");
+    h.join().unwrap();          // ahora sí espera
+}
+```
+
+Y ojo con el `unwrap`: `join` devuelve `Result`, porque el hilo pudo hacer *panic*.
+
+---
+layout: default
+---
+
+## Ejercicio 80: Leer mientras se escribe
+<br/>
+
+```rust
+use std::sync::{Arc, RwLock};
+
+fn main() {
+    let datos = Arc::new(RwLock::new(vec![1, 2, 3]));
+    let escritura = datos.write().unwrap();
+    println!("{}", datos.read().unwrap().len());
+    println!("{}", escritura.len());
+}
+```
+
+❌ Un `RwLock` permite muchos lectores. El código toma la escritura y luego lee. ¿Corre?
+
+---
+layout: default
+---
+
+## Respuesta 80: Leer mientras se escribe
+<br/>
+
+Se cuelga. `RwLock` admite **muchos lectores o un escritor**, nunca las dos cosas, y
+el guard de escritura sigue vivo porque `escritura` se usa en la última línea.
+
+Es la misma regla 1 del borrow checker, con la misma estructura de siempre: varias
+`&` o una `&mut`. Lo único que cambia es que aquí violarla no es un error de
+compilación ni un *panic*, sino una espera infinita.
+
+```rust
+    let n = datos.read().unwrap().len();   // el guard muere aquí
+    datos.write().unwrap().push(4);
+```
+
+`RwLock` conviene cuando se lee mucho más de lo que se escribe. Si no, `Mutex` es más
+simple y más rápido.

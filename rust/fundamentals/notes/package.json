@@ -5,7 +5,11 @@
   "scripts": {
     "build": "slidev build",
     "dev": "slidev --open --port 3031",
-    "export": "slidev export"
+    "export": "slidev export",
+    "export:sections": "python3 export-sections.py",
+    "densidad": "python3 revisar-densidad.py",
+    "indice": "python3 sync-indice.py",
+    "refs": "python3 revisar-refs.py"
   },
   "dependencies": {
     "@slidev/cli": "^52.16.0",
@@ -13,5 +17,8 @@
     "@slidev/theme-default": "latest",
     "@slidev/theme-seriph": "latest",
     "vue": "^3.5.33"
+  },
+  "devDependencies": {
+    "playwright-chromium": "^1.62.1"
   }
 }

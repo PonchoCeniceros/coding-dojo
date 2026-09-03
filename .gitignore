@@ -57,3 +57,6 @@ logs/
 # Backup files
 *.bak
 *.backup
+
+# PDFs del cuaderno: se publican como release assets, no en el repo
+docs/*.pdf

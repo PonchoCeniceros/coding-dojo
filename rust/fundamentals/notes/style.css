@@ -1,17 +1,17 @@
 /* ============================================================
    Canplast Design Language — adaptación para el deck de Slidev
-   Brand = naranja (en lugar del rojo corporativo).
+   Brand = naranja Rust (en lugar del rojo corporativo).
    Cero hex sueltos fuera de este bloque de tokens.
    ============================================================ */
 
 :root {
-  /* --- Brand (rosa/magenta) --- */
-  --brand-300: #D99CAC;  /* tinte suave */
-  --brand-400: #D984AC;  /* rosa medio */
-  --brand-500: #BF3B84;  /* magenta — acción, links, focus */
-  --brand-600: #A23270;
-  --brand-700: #8A2B5F;
-  --brand-tint: rgba(191, 59, 132, 0.13);
+  /* --- Brand (naranja Rust) --- */
+  --brand-300: #F0C4A8;  /* tinte suave */
+  --brand-400: #E8935F;  /* naranja medio */
+  --brand-500: #CE422B;  /* rust orange — acción, links, focus */
+  --brand-600: #A83620;
+  --brand-700: #832918;
+  --brand-tint: rgba(206, 66, 43, 0.13);
 
   /* --- Texto --- */
   --text-500: #000000;
@@ -24,6 +24,9 @@
   --secondary-500: #F5F3F2;
   --accent-100: #BCBCBC;
   --accent-500: #454545;
+
+  /* Texto sobre el degradado de portada (cp-cover): fijo, no depende del tema */
+  --cover-text: #FFFFFF;
 
   /* --- Semántica de estado --- */
   --green-500: #208C5A;
@@ -54,15 +57,15 @@ html.dark,
 .dark {
   /* En oscuro el brand sube de luminosidad (no baja) para conservar
      legibilidad del texto sobre la superficie #212121. */
-  --brand-300: #8A2B5F;
-  --brand-400: #BF3B84;
-  --brand-500: #D984AC;
-  --brand-600: #BF3B84;
-  --brand-700: #A23270;
-  --brand-tint: rgba(217, 132, 172, 0.15);
+  --brand-300: #832918;
+  --brand-400: #A83620;
+  --brand-500: #E8935F;
+  --brand-600: #CE422B;
+  --brand-700: #A83620;
+  --brand-tint: rgba(232, 147, 95, 0.15);
 
   --text-500: #AAAAAA;
-  --text-300: #525252;
+  --text-300: #9E9E9E;
   --text-100: #A3A3A3;
   --text-50:  #111111;
 
@@ -265,6 +268,22 @@ html.dark .slidev-layout :not(pre) > code {
   border-bottom: none !important;
 }
 
+/* Tablas de referencia densas (varias filas cortas): menos padding vertical
+   para que quepan sin invadir el margen inferior del slide. */
+.cp-table-compact td,
+.cp-table-compact th {
+  padding: 0.4rem 0.8rem !important;
+}
+
+/* Bloques de código densos (dos columnas largas en un mismo slide): el tema
+   de Slidev fija tamaño/línea/padding del código vía variables con
+   !important, así que hay que sobreescribir las variables, no la propiedad. */
+.cp-code-compact {
+  --slidev-code-font-size: 10px;
+  --slidev-code-line-height: 15px;
+  --slidev-code-padding: 6px;
+}
+
 .slidev-layout blockquote {
   background: var(--secondary-500);
   border-left: 3px solid var(--brand-500) !important;
@@ -307,7 +326,8 @@ html.dark .cp-callout {
 .cp-callout code,
 .cp-code-inline {
   background: var(--brand-500) !important;
-  color: var(--text-500) !important;
+  /* En tema claro el fondo es el rojo #CE422B: el texto va claro o se pierde. */
+  color: var(--primary-500) !important;
   border-radius: 6px;
   padding: 0.1em 0.35em;
   font-weight: 500;
@@ -335,7 +355,7 @@ html.dark .important-note {
 
 .important-note code {
   background: var(--brand-500) !important;
-  color: var(--text-500) !important;
+  color: var(--primary-500) !important;
 }
 
 html.dark .important-note code {
@@ -388,11 +408,234 @@ html.dark .important-note code {
 }
 
 .cp-cover-text {
-  color: var(--text-500);
-}
-
-html.dark .cp-cover-text {
-  color: var(--text-50);
+  color: var(--cover-text) !important;
 }
 
 .cp-divider { border-color: var(--border-color) !important; }
+
+/* ------------------------------------------------------------
+   Ficha de tipos — tarjetas "categoría → tipos" (p. ej. A02)
+   Reemplaza la tabla markdown por filas tipo card, apiladas.
+   ------------------------------------------------------------ */
+.cp-ficha-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cp-ficha-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--brand-500);
+}
+
+html.dark .cp-ficha-title {
+  color: var(--brand-500);
+}
+
+.cp-ficha-row {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-card);
+  background: var(--primary-500);
+}
+
+.cp-ficha-tipos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.4rem;
+  align-content: start;
+}
+
+.cp-ficha-desc {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-300);
+}
+
+.cp-ficha-ejemplo {
+  font-size: 0.78rem;
+  line-height: 1.85;
+}
+
+/* Bloque "Ver también" — pie de las diapositivas explicativas (guía de tono, R4) */
+.slidev-layout:has(.cp-ver-tambien) {
+  padding-bottom: 1.7rem;
+}
+
+.cp-ver-tambien {
+  position: absolute;
+  /* Alineado con el contenido: el tema aplica `px-14` (3.5rem) al layout, pero el
+     pie es absoluto y su bloque contenedor no es el layout, así que hay que repetir
+     el valor. Se insetan ambos lados para que la línea también case con el texto. */
+  left: 3.5rem;
+  right: 3.5rem;
+  bottom: 0.45rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--brand-500);
+  font-size: 0.62rem;
+  line-height: 1.25;
+  opacity: 0.6;
+  letter-spacing: 0.01em;
+}
+
+.cp-ver-tambien p {
+  margin: 0;
+}
+
+.cp-ver-tambien code {
+  background: transparent !important;
+  font-size: 0.7rem;
+}
+
+/* Barra de desplazamiento de los bloques de código: fuera.
+   El ancho se controla en el origen (ver revisar-densidad.py, que avisa cuando una
+   línea no cabe), así que la barra solo estorbaba. */
+.slidev-code-wrapper,
+.slidev-layout pre,
+.slidev-layout pre > code {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.slidev-code-wrapper::-webkit-scrollbar,
+.slidev-layout pre::-webkit-scrollbar,
+.slidev-layout pre > code::-webkit-scrollbar {
+  height: 0;
+  width: 0;
+  display: none;
+}
+
+/* Menciones de código dentro de un enunciado.
+   El chip naranja sólido queda reservado para lo que la fila está señalando (el
+   objeto del lenguaje); lo que solo se nombra de pasada va en neutro contorneado,
+   para que el color marque la jerarquía y no solo "esto es código". */
+.cp-mencion {
+  color: var(--text-100);
+  opacity: 0.85;
+  white-space: nowrap;
+}
+
+.cp-mencion code {
+  background: transparent !important;
+  color: var(--text-100) !important;
+  border: 1px solid var(--text-100);
+  border-radius: 6px;
+  padding: 0.05em 0.35em;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+html.dark .cp-objeto,
+html.dark .cp-mencion code {
+  color: #f4f4f5 !important;
+}
+
+html.dark .cp-mencion code {
+  border-color: rgba(244, 244, 245, 0.55);
+}
+
+/* ------------------------------------------------------------
+   Láminas naturalistas (portadas)
+   El dibujo se genera con public/images/lamina.py: el trazo es uno solo y las tres
+   paletas viven al principio de ese script.
+
+   Dos clases de rol, que siguen el tema:
+
+     .cp-lamina-portada        va CON el tema  (oscura en oscuro, clara en claro)
+     .cp-lamina-contraportada  igual, con el cardumen en vez del cangrejo
+     .cp-lamina-seccion        siempre clara: en tema oscuro corta el flujo, y en
+                               tema claro se queda clara para poder imprimirse
+
+   Así la portada nunca pelea con el fondo y las portadillas de sección siempre
+   cortan el flujo. La naranja es fija: es el acento, no depende del tema.
+   Las tres clases literales de abajo quedan por si alguna lámina debe fijarse.
+   El PDF se exporta con --dark (export-sections.py), o sea que el impreso
+   conserva la secuencia oscuro → naranja → claro.
+   ------------------------------------------------------------ */
+/* JPEG y no SVG a propósito: el grano (feTurbulence) del SVG obliga al exportador
+   de PDF a rasterizar cada lámina sin compresión, y eso llevó el PDF a 135 MB.
+   El JPEG ya viene comprimido y pasa tal cual. Los .svg y .png quedan como fuente
+   editable; lamina.py sigue generándolos. */
+.cp-lamina {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.cp-lamina-oscura  { background-image: url('/images/lamina-oscuro.jpg'); }
+.cp-lamina-naranja { background-image: url('/images/lamina-naranja.jpg'); }
+.cp-lamina-naranja-peces { background-image: url('/images/lamina-naranja-peces.jpg'); }
+.cp-lamina-clara   { background-image: url('/images/lamina-claro.jpg'); }
+
+/* Rol: la portada va con el tema. */
+.cp-lamina-portada          { background-image: url('/images/lamina-claro.jpg'); }
+html.dark .cp-lamina-portada { background-image: url('/images/lamina-oscuro.jpg'); }
+
+/* Rol: la contraportada va con el tema, pero sin cangrejo: solo el cardumen. */
+.cp-lamina-contraportada           { background-image: url('/images/lamina-claro-peces.jpg'); }
+html.dark .cp-lamina-contraportada { background-image: url('/images/lamina-oscuro-peces.jpg'); }
+
+/* Rol: las portadillas de sección. En tema oscuro van contra el tema; en tema claro
+   se quedan claras, porque una lámina casi negra a sangre no se imprime bien. */
+.cp-lamina-seccion          { background-image: url('/images/lamina-claro.jpg'); }
+html.dark .cp-lamina-seccion { background-image: url('/images/lamina-claro.jpg'); }
+
+/* El texto de portada deja de ser blanco fijo: toma la tinta de su lámina. */
+.slidev-layout:has(.cp-lamina-oscura)  .cp-cover-text { color: #E6D8C4 !important; }
+.slidev-layout:has(.cp-lamina-naranja) .cp-cover-text { color: #3A2015 !important; }
+.slidev-layout:has(.cp-lamina-clara)   .cp-cover-text { color: #4A3226 !important; }
+
+.slidev-layout:has(.cp-lamina-portada) .cp-cover-text { color: #4A3226 !important; }
+.slidev-layout:has(.cp-lamina-contraportada) .cp-cover-text { color: #4A3226 !important; }
+.slidev-layout:has(.cp-lamina-seccion) .cp-cover-text { color: #4A3226 !important; }
+html.dark .slidev-layout:has(.cp-lamina-portada) .cp-cover-text { color: #E6D8C4 !important; }
+html.dark .slidev-layout:has(.cp-lamina-contraportada) .cp-cover-text { color: #E6D8C4 !important; }
+html.dark .slidev-layout:has(.cp-lamina-seccion) .cp-cover-text { color: #4A3226 !important; }
+
+/* ------------------------------------------------------------
+   Colofón de la contraportada: mismo bloque que el título de portada,
+   pero en varias líneas chicas y con interlineado apretado.
+   ------------------------------------------------------------ */
+.cp-colofon p {
+  font-size: 0.66rem;
+  line-height: 1.5;
+  margin: 0;
+  opacity: 0.75;
+}
+.cp-colofon p:first-child {
+  font-size: 0.9rem;
+  opacity: 1;
+  margin-bottom: 0.35rem;
+}
+
+/* ------------------------------------------------------------
+   Folio — número de lámina con el pececito de las portadas.
+   El marcado vive en global-bottom.vue, que Slidev monta en cada lámina.
+   Va a la derecha del bloque "Ver también", fuera de su caja (px-14 = 3.5rem).
+   ------------------------------------------------------------ */
+.cp-folio {
+  position: absolute;
+  right: 1.1rem;
+  bottom: 0.5rem;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+  font-size: 0.62rem;
+  line-height: 1;
+  color: var(--text-100);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.cp-folio-pez {
+  width: 0.85rem;
+  height: 0.85rem;
+  fill: currentColor;
+  stroke: none;
+}

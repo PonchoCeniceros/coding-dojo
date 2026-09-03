@@ -13,10 +13,16 @@ The repo is organized **language-first**. Within Rust there are two tracks: `fun
 ```
 rust/
 ├── fundamentals/           # Mastering the language
-│   ├── notes/              # Slidev study deck (pnpm project)
+│   ├── notes/              # "Rust · Cuaderno de campo" — Slidev, ONE deck.
 │   │   ├── slides.md       # Entry point; includes pages/ via `src:`
-│   │   └── pages/          # A0X syntax, B0X memory safety, C0X enums,
-│   │                       # D0X data structures, E0X appendices
+│   │   ├── export-sections.py  # One PDF per section (splits the deck) + standalone decks
+│   │   ├── sync-indice.py  # Re-syncs the TOC's slide numbers. RUN AFTER EDITING pages/
+│   │   ├── ejercicios.md   # Standalone deck: 56 exercises (its own PDF, not in slides.md)
+│   │   ├── GUIA-DE-TONO.md # Writing/tone rules for the deck — READ BEFORE EDITING
+│   │   ├── _multideck/     # Abandoned per-section entry files. Safe to delete.
+│   │   └── pages/          # Numbered by section (topological order, see below):
+│   │                       # 1.1-tokens.md … 7.4-errores-idiomaticos.md,
+│   │                       # ap0-cheatsheet.md, ap2-aplicacion.md, ejercicios.md
 │   └── trials/             # Cargo package "katas" (LeetCode in Rust)
 │       ├── Cargo.toml
 │       ├── holocron.sh     # Scaffolds/tests/runs trials
@@ -24,7 +30,10 @@ rust/
 │           ├── lib.rs      # `mod macros;`
 │           ├── macros.rs   # exports the `s!` macro
 │           └── bin/{ID}_{name}.rs   # one binary per trial (34)
-└── building/               # Applied projects (notes/ + projects/) — planned
+└── building/               # Applied Cargo projects — planned. No separate
+                             # slide deck; concepts live in fundamentals/notes
+                             # (prefix F) — only per-project crate details
+                             # belong here, in that project's own README
 python/
 ├── trials/                 # Python solutions (pytest-based, 21)
 │   ├── {ID}.py             # Solution file with tests
@@ -104,7 +113,38 @@ rust/fundamentals/trials/holocron.sh -l
 ```bash
 pnpm --dir rust/fundamentals/notes run dev
 ```
-Also available as the `rust-notes` config in `.claude/launch.json` (port 3031).
+One deck, ~296 slides (called *láminas* in the deck's own language), served whole on port 3031, plus a standalone `ejercicios.md`
+(114 slides) that is exported separately. The split into sections happens only at
+PDF export time: `pnpm export:sections` produces one PDF per section in `exports/`.
+The deck's TOC links to slide numbers, so **run `python3 sync-indice.py` after
+adding, removing or reordering any page** or the links go stale. Also available as the `rust-notes` config in `.claude/launch.json`.
+
+### Learning line (topological)
+
+Sections are ordered so that nothing is used before it is explained:
+`1 Fundamentos` (tokens, escalares, variables, expresiones, funciones, control de
+flujo) · `2 Tipos compuestos` (tuplas/arreglos, structs *sin métodos*, enums,
+patrones) · `3 Memoria` (stack/heap, ownership, borrowing, impl y métodos,
+lifetimes) · `4 Abstracciones de costo cero` (traits, generics, closures) · `5 Vocabulario
+stdlib` (Option, Result, Vec, HashMap, otras colecciones, iteradores) ·
+`6 Indirección` (Box, Rc/RefCell, dyn) · `7 Proyectos` (módulos, Cargo, tests,
+errores, I/O, macros) · `8 Concurrencia` (hilos, Send/Sync, Arc/Mutex, canales,
+rayon) · `9 Async` (async/await, Future, runtime, Send en tareas).
+
+Sections 8 and 9 close the fundamentals for the applied tracks the user is heading
+into: web APIs, databases, Polars, parallel compute. Async is taught at the language
+level only — the runtime (tokio) and frameworks belong in `rust/building/`.
+
+Consequences worth knowing before editing: **`impl`/methods are split from `struct`**
+(datos in 2.2, métodos in 3.4, because `&self` is a borrow); **traits come before
+generics** (bounds are traits); and the two "ya lo viste" tables in 4.1/4.2 are now
+**forward maps** ("dónde vas a encontrarlos"). Two forward references are declared
+explicitly in 1.2 and allowed everywhere: string literals (`&str`) and `String`.
+Adding a page? Check nothing it uses is introduced later.
+
+A per-section multi-deck layout was tried and reverted: reading the notes wants one
+continuous deck, and only the PDFs need to be separate. The abandoned entry files
+are in `_multideck/`.
 
 ## Key Technical Details
 
@@ -139,6 +179,7 @@ Also available as the `rust-notes` config in `.claude/launch.json` (port 3031).
 | Test all Python | `pytest` |
 | Test all Rust | `cargo test --manifest-path rust/fundamentals/trials/Cargo.toml` |
 | Serve study deck | `pnpm --dir rust/fundamentals/notes run dev` |
+| One PDF per section | `pnpm --dir rust/fundamentals/notes run export:sections` |
 
 ## Code Philosophy
 
@@ -153,7 +194,8 @@ Per the README philosophy:
 - `roadmap.csv` — tracks problem metadata and progress (spans both languages, hence at root)
 - `pytest.ini` — pytest configuration (testpaths, pythonpath, logging)
 - `rust/fundamentals/trials/Cargo.toml` — Rust package config
-- `rust/fundamentals/notes/slides.md` — study deck entry point
+- `rust/fundamentals/notes/slides.md` — study deck entry point (the only one)
+- `rust/fundamentals/notes/GUIA-DE-TONO.md` — tone rules for the decks; read it before writing or editing any page
 
 ## Notes for Future Sessions
 - Both language paths run independently; no requirement to do both
@@ -162,6 +204,9 @@ Per the README philosophy:
 - Test scaffold filenames follow the pattern: Python uses `test_{function_name}`, Rust uses `test_{package_name}`
 - The Slidev deck's images use root-absolute paths (`/images/...`) served from `notes/public`; its page includes use `./pages/...`. Both are internal, so the deck can be moved as a unit.
 - In Slidev pages, sibling `<div>`s containing markdown need blank lines around them, or the build fails with `Element is missing end tag`.
+- `rust/building/notes` (a separate "Rust Aplicado" deck) was merged into `rust/fundamentals/notes` as the `F0X` pages (Módulos, Crates y Cargo) — there is now a single Slidev deck for all of Rust. `rust/building/` keeps only future Cargo projects.
+- `slidev export --range "X-Y"` silently produces blank-page PDFs/PNGs in this Slidev version (Playwright rendering bug). `export-sections.py` works around it by exporting the full deck once and splitting the result with `pypdf`, verifying each PDF's content streams aren't suspiciously small before trusting the output. It was updated for the new numbering: sections are keyed `0`–`7`, `cheat`, `ap`, `ej` (see `section_key()`).
+- The deck was split and reordered on 2026-08-31: `A01`…`Z02` became `1.1`…`7.4` plus appendices, `B02` was split into `2.3-borrowing.md` and `2.4-lifetimes.md`, and nine placeholder pages were created for content that does not exist yet (`1.1`, `1.3`, `1.6`, `2.5`, `4.4`, `5.3`, `7.3`, `7.4`, `0-por-que-rust`). Originals kept as `pages/_B02-original.md.bak` and `pages/_Z01-original.md.bak`.
 
 ## Failing tests (pre-existing; unrelated to the language-first refactor)
 
